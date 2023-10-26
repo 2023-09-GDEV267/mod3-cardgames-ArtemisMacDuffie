@@ -138,6 +138,11 @@ public class Prospector : MonoBehaviour {
 
 			cp.SetSortingLayerName(tSD.layerName);
 
+			if (Random.Range(0,1) < goldChance)
+			{
+				
+			}
+
 			tableau.Add(cp);
 		}
 
