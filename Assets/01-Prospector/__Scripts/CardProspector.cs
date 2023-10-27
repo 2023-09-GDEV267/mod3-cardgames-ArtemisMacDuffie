@@ -17,6 +17,7 @@ public class CardProspector : Card
     public List<CardProspector> hiddenBy = new List<CardProspector>();
     public int layoutID;
     public SlotDef slotDef;
+    public bool gold = false;
 
     public override void OnMouseUpAsButton()
     {

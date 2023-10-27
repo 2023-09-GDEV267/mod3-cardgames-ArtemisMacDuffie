@@ -15,6 +15,7 @@ public class FloatingScore : MonoBehaviour
 {
     [Header("Set Dynamically")]
     public eFSState state = eFSState.idle;
+    public bool gold = false;
 
     [SerializeField]
     protected int _score = 0;
@@ -67,6 +68,8 @@ public class FloatingScore : MonoBehaviour
     public void FSCallback(FloatingScore fs)
     {
         score += fs.score;
+        if (fs.gold)
+            score *= 2;
     }
 
     void Update()

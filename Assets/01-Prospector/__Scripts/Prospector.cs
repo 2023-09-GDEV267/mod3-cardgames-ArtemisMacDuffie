@@ -138,9 +138,12 @@ public class Prospector : MonoBehaviour {
 
 			cp.SetSortingLayerName(tSD.layerName);
 
-			if (Random.Range(0,1) < goldChance)
+			if (Random.Range(0.0f,1.0f) < goldChance)
 			{
-				
+				cp.GetComponent<SpriteRenderer>().sprite = deck.cardFrontGold;
+				cp.GetComponent<CardProspector>().
+					back.GetComponent<SpriteRenderer>().sprite = deck.cardBackGold;
+				cp.gold = true;
 			}
 
 			tableau.Add(cp);
@@ -244,7 +247,7 @@ public class Prospector : MonoBehaviour {
 		{
 			case eCardState.target:
 				break;
-			
+
 			case eCardState.drawpile:
 				MoveToDiscard(target);
 				MoveToTarget(Draw());
@@ -257,7 +260,7 @@ public class Prospector : MonoBehaviour {
 				bool validMatch = true;
 				if (!cd.faceUp)
 					validMatch = false;
-				if (!AdjacentRank(cd,target))
+				if (!AdjacentRank(cd, target))
 					validMatch = false;
 				if (!validMatch)
 					return;
@@ -265,8 +268,18 @@ public class Prospector : MonoBehaviour {
 				tableau.Remove(cd);
 				MoveToTarget(cd);
 				SetTableauFaces();
-				ScoreManager.EVENT(eScoreEvent.mine);
-				FloatingScoreHandler(eScoreEvent.mine);
+
+				if (cd.gold)
+				{
+					ScoreManager.EVENT(eScoreEvent.mineGold);
+					FloatingScoreHandler(eScoreEvent.mineGold);
+				}
+				else
+				{
+					ScoreManager.EVENT(eScoreEvent.mine);
+					FloatingScoreHandler(eScoreEvent.mine);
+				}
+
 				break;
 		}
 		CheckForGameOver();
@@ -371,6 +384,7 @@ public class Prospector : MonoBehaviour {
 				break;
 
 			case eScoreEvent.mine:
+			case eScoreEvent.mineGold:
 				FloatingScore fs;
 				Vector2 p0 = Input.mousePosition;
 				p0.x /= Screen.width;
@@ -379,8 +393,13 @@ public class Prospector : MonoBehaviour {
 				fsPts.Add(p0);
 				fsPts.Add(fsPosMid);
 				fsPts.Add(fsPosRun);
-				fs = Scoreboard.S.CreateFloatingScore(ScoreManager.CHAIN, fsPts);
-				if (fsRun == null)
+
+				if (evt == eScoreEvent.mine)
+					fs = Scoreboard.S.CreateFloatingScore(ScoreManager.CHAIN, fsPts, false);
+				else
+                    fs = Scoreboard.S.CreateFloatingScore(ScoreManager.CHAIN, fsPts, true);
+
+                if (fsRun == null)
 				{
 					fsRun = fs;
 					fsRun.reportFinishTo = null;
@@ -388,6 +407,6 @@ public class Prospector : MonoBehaviour {
 				else
 					fs.reportFinishTo = fsRun.gameObject;
 				break;
-		}
+        }
 	}
 }
