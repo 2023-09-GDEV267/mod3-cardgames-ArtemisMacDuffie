@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 156893583}
   - component: {fileID: 156893582}
   - component: {fileID: 156893581}
-  - component: {fileID: 156893586}
+  - component: {fileID: 156893588}
   - component: {fileID: 156893585}
   - component: {fileID: 156893587}
   m_Layer: 0
@@ -277,7 +277,60 @@ MonoBehaviour:
   decorators: []
   cardDefs: []
   deckAnchor: {fileID: 0}
---- !u!114 &156893586
+--- !u!114 &156893587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156893580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fd3334ca5d3f7b49ae8fd1ce5dd204d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  xmlr:
+    xmlText: 
+  multiplier: {x: 0, y: 0}
+  slotDefs: []
+  stock:
+    x: 0
+    y: 0
+    faceUp: 0
+    layerName: Default
+    layerID: 0
+    id: 0
+    hiddenBy: 
+    type: slot
+    stagger: {x: 0, y: 0}
+  waste:
+    x: 0
+    y: 0
+    faceUp: 0
+    layerName: Default
+    layerID: 0
+    id: 0
+    hiddenBy: 
+    type: slot
+    stagger: {x: 0, y: 0}
+  goal:
+    x: 0
+    y: 0
+    faceUp: 0
+    layerName: Default
+    layerID: 0
+    id: 0
+    hiddenBy: 
+    type: slot
+    stagger: {x: 0, y: 0}
+  sortingLayerNames:
+  - Row0
+  - Row1
+  - Row2
+  - Row3
+  - Discard
+  - Draw
+--- !u!114 &156893588
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -299,49 +352,6 @@ MonoBehaviour:
   goal: []
   tableau: []
   layoutAnchor: {fileID: 0}
---- !u!114 &156893587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156893580}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fd3334ca5d3f7b49ae8fd1ce5dd204d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  xmlr:
-    xmlText: 
-  multiplier: {x: 0, y: 0}
-  slotDefs: []
-  drawPile:
-    x: 0
-    y: 0
-    faceUp: 0
-    layerName: Default
-    layerID: 0
-    id: 0
-    hiddenBy: 
-    type: slot
-    stagger: {x: 0, y: 0}
-  discardPile:
-    x: 0
-    y: 0
-    faceUp: 0
-    layerName: Default
-    layerID: 0
-    id: 0
-    hiddenBy: 
-    type: slot
-    stagger: {x: 0, y: 0}
-  sortingLayerNames:
-  - Row0
-  - Row1
-  - Row2
-  - Row3
-  - Discard
-  - Draw
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -54,13 +54,13 @@
 	<slot id="27" x="6"  y="-2" faceup="1" layer="6" />
 	
 	<!-- This positions the stock -->
-	<slot type="stock" x="-6" y="-4" faceup="0" layer="4"/>
+	<slot type="stock" x="-6" y="-4" faceup="0" layer="7"/>
 	
 	<!-- This positions the waste -->
-	<slot type="waste" x="0" y="-4" layer="5"/>
+	<slot type="waste" x="0" y="-4" layer="8"/>
 	
 	<!-- This positions the goal -->
-	<slot type="goal" x="6" y="-4" layer="5"/>
+	<slot type="goal" x="6" y="-4" layer="9"/>
 	
 </xml>
 	

@@ -24,11 +24,17 @@ public class LayoutPyramid : MonoBehaviour
     public Vector2 multiplier;
 
     public List<PyrSlotDef> slotDefs;
-    public PyrSlotDef drawPile;
-    public PyrSlotDef discardPile;
+    public PyrSlotDef stock;
+    public PyrSlotDef waste;
+    public PyrSlotDef goal;
 
-    public string[] sortingLayerNames = new string[] {
-        "Row0", "Row1", "Row2", "Row3", "Discard", "Draw"};
+    public string[] sortingLayerNames;
+
+    private void Awake()
+    {
+        sortingLayerNames = new string[]{
+            "Row0", "Row1", "Row2", "Row3", "Row4", "Row5", "Row6", "Stock", "Waste", "Goal"};
+    }
 
     public void ReadLayout(string xmlText)
     {
@@ -77,13 +83,16 @@ public class LayoutPyramid : MonoBehaviour
                     slotDefs.Add(tSD);
                     break;
 
-                case "drawpile":
-                    tSD.stagger.x = float.Parse(slotsX[i].att("xstagger"));
-                    drawPile = tSD;
+                case "stock":
+                    stock = tSD;
                     break;
 
-                case "discardpile":
-                    discardPile = tSD;
+                case "waste":
+                    waste = tSD;
+                    break;
+
+                case "goal":
+                    goal = tSD;
                     break;
             }
         }

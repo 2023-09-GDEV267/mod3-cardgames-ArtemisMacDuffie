@@ -19,8 +19,8 @@ public class Pyramid : MonoBehaviour
     [Header("Set Dynamically")]
     public Deck deck;
     public LayoutPyramid layout;
-    public Stack<CardPyramid> stock;
-    public Stack<CardPyramid> waste;
+    public System.Collections.Generic.Stack<CardPyramid> stock;
+    public System.Collections.Generic.Stack<CardPyramid> waste;
     public List<CardPyramid> goal;
     public List<CardPyramid> tableau;
     public Transform layoutAnchor;
@@ -47,14 +47,14 @@ public class Pyramid : MonoBehaviour
 
     Stack<CardPyramid> ConvertListCardsToListCardPyramid(List<Card> lCD)
     {
-        Stack<CardPyramid> lCP = new Stack<CardPyramid>();
+        Stack<CardPyramid> sCP = new Stack<CardPyramid>(52);
         CardPyramid tCP;
         foreach (Card tCD in lCD)
         {
             tCP = tCD as CardPyramid;
-            lCP.Push(tCP);
+            sCP.Push(tCP);
         }
-        return lCP;
+        return sCP;
     }
 
     void LayoutGame()
@@ -91,10 +91,19 @@ public class Pyramid : MonoBehaviour
         {
             foreach (int hid in tCP.slotDef.hiddenBy)
             {
-                //cp = FindCardByLayoutID(hid);
-                //tCP.hiddenBy.Add(cp)
+                cp = FindCardByLayoutID(hid);
+                tCP.hiddenBy.Add(cp);
             }
         }
+    }
+
+    CardPyramid FindCardByLayoutID(int layoutID)
+    {
+        foreach(CardPyramid tCP in tableau)
+        {
+            if (tCP.layoutID == layoutID) return tCP;
+        }
+        return null;
     }
 
     CardPyramid Draw()
