@@ -10,7 +10,7 @@ public class Prospector : MonoBehaviour {
 	static public Prospector 	S;
 
 	[Header("Set in Inspector")]
-	public TextAsset			deckXML;
+	public TextAsset deckXML;
 	public TextAsset layoutXML;
 	public float xOffset = 3;
 	public float yOffset = -2.5f;
@@ -24,7 +24,7 @@ public class Prospector : MonoBehaviour {
 	public float goldChance = 0.1f;
 
 	[Header("Set Dynamically")]
-	public Deck					deck;
+	public Deck	deck;
 	public Layout layout;
 	public List<CardProspector> drawPile;
 	public Transform layoutAnchor;
