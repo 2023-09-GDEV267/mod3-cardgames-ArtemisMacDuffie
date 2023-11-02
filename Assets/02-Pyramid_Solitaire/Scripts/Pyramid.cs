@@ -20,11 +20,18 @@ public class Pyramid : MonoBehaviour
     public Deck deck;
     public LayoutPyramid layout;
     public List<CardPyramid> stockCards;
+
+    [SerializeField]
     public Stack<CardPyramid> stock;
+
+    [SerializeField]
     public Stack<CardPyramid> waste;
+
     public List<CardPyramid> goal;
     public List<CardPyramid> tableau;
     public Transform layoutAnchor;
+    public CardPyramid wasteTop;
+    public CardPyramid selected;
 
     void Awake()
     {
@@ -77,6 +84,8 @@ public class Pyramid : MonoBehaviour
         {
             cp = SetUpDraw();
             cp.faceUp = tSD.faceUp;
+            cp.clickable = true;
+            cp.selected = false;
             cp.transform.parent = layoutAnchor;
             cp.transform.localPosition = new Vector3(
                 layout.multiplier.x * tSD.x,
@@ -98,6 +107,7 @@ public class Pyramid : MonoBehaviour
             {
                 cp = FindCardByLayoutID(hid);
                 tCP.hiddenBy.Add(cp);
+                tCP.clickable = false;
             }
         }
 
@@ -120,10 +130,49 @@ public class Pyramid : MonoBehaviour
         return cd;
     }
 
-    CardPyramid Draw()
+    public void Draw()
     {
-        CardPyramid cd = stock.Pop();
-        return cd;
+        CardPyramid cd;
+        
+        if (wasteTop != null)
+        {
+            MoveCard(wasteTop, layout.waste, pCardState.waste);
+            waste.Push(wasteTop);
+        }
+
+        if (stock.Count != 0)
+        {
+            cd = stock.Pop();
+            MoveCard(cd, layout.wasteTop, pCardState.wasteTop);
+            wasteTop = cd;
+        }
+    }
+
+    public void WasteToStock()
+    {
+        if (wasteTop != null)
+        {
+            MoveCard(wasteTop, layout.stock, pCardState.stock);
+            stock.Push(wasteTop);
+        }
+
+        CardPyramid cd;
+
+        while (waste.Count != 0)
+        {
+            cd = waste.Pop();
+            MoveCard(cd, layout.stock, pCardState.stock);
+            stock.Push(cd);
+        }
+    }
+
+    public void MoveCard(CardPyramid cd, PyrSlotDef sd, pCardState state)
+    {
+        cd.state = state;
+        cd.transform.localPosition = new Vector3(
+            sd.x, sd.y, 0);
+        cd.faceUp = sd.faceUp;
+        cd.SetSortingLayerName(sd.layerName);
     }
 
     void SetUpStock()
@@ -143,5 +192,69 @@ public class Pyramid : MonoBehaviour
             cd.SetSortingLayerName(layout.stock.layerName);
             stock.Push(cd);
         }
+    }
+
+    public void CardClicked(CardPyramid cd)
+    {
+        switch (cd.state)
+        {
+            case pCardState.goal:
+            case pCardState.waste:
+                break;
+
+            case pCardState.stock:
+                Draw();
+                break;
+
+            case pCardState.wasteTop:
+                if (cd.rank == 13)
+                {
+                    MoveCard(cd, layout.goal, pCardState.goal);
+                    goal.Add(cd);
+                }
+                //***
+                break;
+
+            case pCardState.tableau:
+                if (cd.clickable)
+                {
+                    if (selected == null)
+                    {
+                        if (cd.rank == 13)
+                        {
+                            MoveCard(cd, layout.goal, pCardState.goal);
+                            goal.Add(cd);
+                        }
+                        else
+                        {
+                            selected = cd;
+                        }
+                    }
+                    else if (ValidPair(cd, selected))
+                    {
+                        //***
+                    }
+                    else
+                    {
+                        selected = null;
+                    }
+                }
+                break;
+        }
+
+        //CheckForGameOver();
+    }
+
+    public bool ValidPair(CardPyramid cd1,  CardPyramid cd2)
+    {
+        if (cd1.rank + cd2.rank == 13)
+            return true;
+
+        return false;
+    }
+
+    public void SelectCard(CardPyramid cd)
+    {
+
     }
 }

@@ -71,11 +71,11 @@ TagManager:
   - name: Stock
     uniqueID: 897264291
     locked: 0
-  - name: WasteTop
-    uniqueID: 4085945929
-    locked: 0
   - name: Waste
     uniqueID: 3013078151
+    locked: 0
+  - name: WasteTop
+    uniqueID: 4085945929
     locked: 0
   - name: Goal
     uniqueID: 1621494505

@@ -25,6 +25,7 @@ public class LayoutPyramid : MonoBehaviour
 
     public List<PyrSlotDef> slotDefs;
     public PyrSlotDef stock;
+    public PyrSlotDef wasteTop;
     public PyrSlotDef waste;
     public PyrSlotDef goal;
 
@@ -34,7 +35,7 @@ public class LayoutPyramid : MonoBehaviour
     {
         sortingLayerNames = new string[]{
             "Row0", "Row1", "Row2", "Row3", "Row4", "Row5", "Row6",
-            "Stock", "WasteTop", "Waste", "Goal"};
+            "Stock", "Waste", "WasteTop", "Goal"};
     }
 
     public void ReadLayout(string xmlText)
@@ -71,7 +72,7 @@ public class LayoutPyramid : MonoBehaviour
             switch (tSD.type)
             {
                 case "slot":
-                    tSD.faceUp = (slotsX[i].att("faceup") == "1");
+                    tSD.faceUp = true;
                     tSD.id = int.Parse(slotsX[i].att("id"));
                     if (slotsX[i].HasAtt("hiddenby"))
                     {
@@ -85,14 +86,22 @@ public class LayoutPyramid : MonoBehaviour
                     break;
 
                 case "stock":
+                    tSD.faceUp = false;
                     stock = tSD;
                     break;
 
+                case "wasteTop":
+                    tSD.faceUp = true;
+                    wasteTop = tSD;
+                    break;
+
                 case "waste":
+                    tSD.faceUp = true;
                     waste = tSD;
                     break;
 
                 case "goal":
+                    tSD.faceUp = false;
                     goal = tSD;
                     break;
             }
