@@ -59,3 +59,24 @@ TagManager:
   - name: Draw
     uniqueID: 1270309477
     locked: 0
+  - name: Row4
+    uniqueID: 1550900685
+    locked: 0
+  - name: Row5
+    uniqueID: 2633387513
+    locked: 0
+  - name: Row6
+    uniqueID: 3262737347
+    locked: 0
+  - name: Stock
+    uniqueID: 897264291
+    locked: 0
+  - name: WasteTop
+    uniqueID: 4085945929
+    locked: 0
+  - name: Waste
+    uniqueID: 3013078151
+    locked: 0
+  - name: Goal
+    uniqueID: 1621494505
+    locked: 0

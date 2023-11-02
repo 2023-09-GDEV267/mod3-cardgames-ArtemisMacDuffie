@@ -33,7 +33,8 @@ public class LayoutPyramid : MonoBehaviour
     private void Awake()
     {
         sortingLayerNames = new string[]{
-            "Row0", "Row1", "Row2", "Row3", "Row4", "Row5", "Row6", "Stock", "Waste", "Goal"};
+            "Row0", "Row1", "Row2", "Row3", "Row4", "Row5", "Row6",
+            "Stock", "WasteTop", "Waste", "Goal"};
     }
 
     public void ReadLayout(string xmlText)

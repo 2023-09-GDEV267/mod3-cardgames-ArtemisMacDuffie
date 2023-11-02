@@ -19,8 +19,9 @@ public class Pyramid : MonoBehaviour
     [Header("Set Dynamically")]
     public Deck deck;
     public LayoutPyramid layout;
-    public System.Collections.Generic.Stack<CardPyramid> stock;
-    public System.Collections.Generic.Stack<CardPyramid> waste;
+    public List<CardPyramid> stockCards;
+    public Stack<CardPyramid> stock;
+    public Stack<CardPyramid> waste;
     public List<CardPyramid> goal;
     public List<CardPyramid> tableau;
     public Transform layoutAnchor;
@@ -28,6 +29,10 @@ public class Pyramid : MonoBehaviour
     void Awake()
     {
         S = this;
+        stock = new Stack<CardPyramid>(24);
+        waste = new Stack<CardPyramid>(24);
+        goal = new List<CardPyramid>();
+        tableau = new List<CardPyramid>();
     }
 
 
@@ -40,19 +45,19 @@ public class Pyramid : MonoBehaviour
         layout = GetComponent<LayoutPyramid>();
         layout.ReadLayout(layoutXML.text);
 
-        stock = ConvertListCardsToListCardPyramid(deck.cards);
+        stockCards = ConvertListCardsToListCardPyramid(deck.cards);
 
         LayoutGame();
     }
 
-    Stack<CardPyramid> ConvertListCardsToListCardPyramid(List<Card> lCD)
+    List<CardPyramid> ConvertListCardsToListCardPyramid(List<Card> lCD)
     {
-        Stack<CardPyramid> sCP = new Stack<CardPyramid>(52);
+        List<CardPyramid> sCP = new List<CardPyramid>();
         CardPyramid tCP;
         foreach (Card tCD in lCD)
         {
             tCP = tCD as CardPyramid;
-            sCP.Push(tCP);
+            sCP.Add(tCP);
         }
         return sCP;
     }
@@ -70,7 +75,7 @@ public class Pyramid : MonoBehaviour
 
         foreach(PyrSlotDef tSD in layout.slotDefs)
         {
-            cp = Draw();
+            cp = SetUpDraw();
             cp.faceUp = tSD.faceUp;
             cp.transform.parent = layoutAnchor;
             cp.transform.localPosition = new Vector3(
@@ -95,6 +100,8 @@ public class Pyramid : MonoBehaviour
                 tCP.hiddenBy.Add(cp);
             }
         }
+
+        SetUpStock();
     }
 
     CardPyramid FindCardByLayoutID(int layoutID)
@@ -106,9 +113,35 @@ public class Pyramid : MonoBehaviour
         return null;
     }
 
+    CardPyramid SetUpDraw()
+    {
+        CardPyramid cd = stockCards[0];
+        stockCards.RemoveAt(0);
+        return cd;
+    }
+
     CardPyramid Draw()
     {
         CardPyramid cd = stock.Pop();
         return cd;
+    }
+
+    void SetUpStock()
+    {
+        CardPyramid cd;
+
+        for (int i = 0; i < stockCards.Count; i++)
+        {
+            cd = stockCards[i];
+            cd.transform.parent = layoutAnchor;
+
+            cd.transform.localPosition = new Vector3(
+                layout.stock.x, layout.stock.y, 0);
+
+            cd.faceUp = false;
+            cd.state = pCardState.stock;
+            cd.SetSortingLayerName(layout.stock.layerName);
+            stock.Push(cd);
+        }
     }
 }
