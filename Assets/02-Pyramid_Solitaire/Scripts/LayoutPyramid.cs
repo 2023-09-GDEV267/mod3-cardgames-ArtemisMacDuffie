@@ -8,6 +8,7 @@ public class PyrSlotDef
 {
     public float x;
     public float y;
+    public float z;
     public bool faceUp = false;
     public string layerName = "Default";
     public int layerID = 0;
@@ -65,6 +66,7 @@ public class LayoutPyramid : MonoBehaviour
 
             tSD.x = float.Parse(slotsX[i].att("x"));
             tSD.y = float.Parse(slotsX[i].att("y"));
+            tSD.z = 0;
             tSD.layerID = int.Parse(slotsX[i].att("layer"));
 
             tSD.layerName = sortingLayerNames[tSD.layerID];
@@ -92,6 +94,7 @@ public class LayoutPyramid : MonoBehaviour
 
                 case "wasteTop":
                     tSD.faceUp = true;
+                    tSD.z = -1;
                     wasteTop = tSD;
                     break;
 
@@ -101,7 +104,7 @@ public class LayoutPyramid : MonoBehaviour
                     break;
 
                 case "goal":
-                    tSD.faceUp = false;
+                    tSD.faceUp = true;
                     goal = tSD;
                     break;
             }

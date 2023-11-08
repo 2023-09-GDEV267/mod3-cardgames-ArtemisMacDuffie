@@ -54,7 +54,7 @@
 	<slot id="27" x="6"  y="-1" layer="6" />
 	
 	<!-- This positions the stock -->
-	<slot type="stock" x="-10" y="-6" faceup="0" layer="7"/>
+	<slot type="stock" x="-10" y="-6" layer="7"/>
 
 	<!-- This positions the waste -->
 	<slot type="waste" x="-4" y="-6" layer="8"/>

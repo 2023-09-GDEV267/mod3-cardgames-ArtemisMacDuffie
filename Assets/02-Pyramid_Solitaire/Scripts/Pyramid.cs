@@ -1,9 +1,19 @@
+/**
+ * To do list:
+ * cards removed by tableau allow underlying cards to be selected
+ * check for game over
+ *      -empty tableau: win
+ *      -no possible valid pairs among selectable: lose
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Unity.Collections.LowLevel.Unsafe;
+using UnityEditor.Experimental.GraphView;
 
 public class Pyramid : MonoBehaviour
 {
@@ -138,6 +148,7 @@ public class Pyramid : MonoBehaviour
         {
             MoveCard(wasteTop, layout.waste, pCardState.waste);
             waste.Push(wasteTop);
+            wasteTop.clickable = false;
         }
 
         if (stock.Count != 0)
@@ -145,6 +156,7 @@ public class Pyramid : MonoBehaviour
             cd = stock.Pop();
             MoveCard(cd, layout.wasteTop, pCardState.wasteTop);
             wasteTop = cd;
+            wasteTop.clickable = true;
         }
     }
 
@@ -154,6 +166,8 @@ public class Pyramid : MonoBehaviour
         {
             MoveCard(wasteTop, layout.stock, pCardState.stock);
             stock.Push(wasteTop);
+            wasteTop.clickable = false;
+            wasteTop = null;
         }
 
         CardPyramid cd;
@@ -170,7 +184,7 @@ public class Pyramid : MonoBehaviour
     {
         cd.state = state;
         cd.transform.localPosition = new Vector3(
-            sd.x, sd.y, 0);
+            sd.x, sd.y, sd.z);
         cd.faceUp = sd.faceUp;
         cd.SetSortingLayerName(sd.layerName);
     }
@@ -207,12 +221,34 @@ public class Pyramid : MonoBehaviour
                 break;
 
             case pCardState.wasteTop:
-                if (cd.rank == 13)
+                if (selected == null)
                 {
-                    MoveCard(cd, layout.goal, pCardState.goal);
-                    goal.Add(cd);
+                    if (cd.rank == 13)
+                    {
+                        MoveToGoal(cd);
+                        wasteTop = waste.Pop();
+                        MoveCard(wasteTop, layout.wasteTop, pCardState.wasteTop);
+                        wasteTop.clickable = true;
+                    }
+                    else
+                    {
+                        SelectCard(cd);
+                    }
                 }
-                //***
+                else if (ValidPair(cd, selected))
+                {
+                    MoveToGoal(cd);
+                    MoveToGoal(selected);
+                    wasteTop = waste.Pop();
+                    MoveCard(wasteTop, layout.wasteTop, pCardState.wasteTop);
+                    wasteTop.clickable = true;
+                    //allow underlying cards to be selected
+                    UnselectCard();
+                }
+                else
+                {
+                    UnselectCard();
+                }
                 break;
 
             case pCardState.tableau:
@@ -222,21 +258,29 @@ public class Pyramid : MonoBehaviour
                     {
                         if (cd.rank == 13)
                         {
-                            MoveCard(cd, layout.goal, pCardState.goal);
-                            goal.Add(cd);
+                            MoveToGoal(cd);
                         }
                         else
                         {
-                            selected = cd;
+                            SelectCard(cd);
                         }
                     }
                     else if (ValidPair(cd, selected))
                     {
-                        //***
+                        if (selected.state == pCardState.wasteTop)
+                        {
+                            wasteTop = waste.Pop();
+                            MoveCard(wasteTop, layout.wasteTop, pCardState.wasteTop);
+                            wasteTop.clickable = true;
+                        }
+                        MoveToGoal(cd);
+                        MoveToGoal(selected);
+                        //allow underlying cards to be selected
+                        UnselectCard();
                     }
                     else
                     {
-                        selected = null;
+                        UnselectCard();
                     }
                 }
                 break;
@@ -244,6 +288,7 @@ public class Pyramid : MonoBehaviour
 
         //CheckForGameOver();
     }
+
 
     public bool ValidPair(CardPyramid cd1,  CardPyramid cd2)
     {
@@ -254,6 +299,31 @@ public class Pyramid : MonoBehaviour
     }
 
     public void SelectCard(CardPyramid cd)
+    {
+        cd.selected = true;
+        selected = cd;
+    }
+
+    public void UnselectCard()
+    {
+        selected.selected = false;
+        selected = null;
+    }
+
+    public void MoveToGoal(CardPyramid cd)
+    {
+        cd.selected = false;
+        cd.clickable = false;
+        goal.Add(cd);
+        MoveCard(cd, layout.goal, pCardState.goal);
+        if (tableau.Contains(cd))
+        {
+            tableau.Remove(cd);
+        }
+        cd.SetSortOrder(-152 + 3*goal.Count);
+    }
+
+    public void CheckForGameOver()
     {
 
     }
