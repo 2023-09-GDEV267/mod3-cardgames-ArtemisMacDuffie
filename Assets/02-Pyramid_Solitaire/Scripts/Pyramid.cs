@@ -1,19 +1,9 @@
-/**
- * To do list:
- * cards removed by tableau allow underlying cards to be selected
- * check for game over
- *      -empty tableau: win
- *      -no possible valid pairs among selectable: lose
- */
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Unity.Collections.LowLevel.Unsafe;
-using UnityEditor.Experimental.GraphView;
 
 public class Pyramid : MonoBehaviour
 {
@@ -25,6 +15,8 @@ public class Pyramid : MonoBehaviour
     public float xOffset = 3f;
     public float yOffset = -2.5f;
     public Vector3 layoutCenter;
+    public GameObject loseText;
+    public GameObject winText;
 
     [Header("Set Dynamically")]
     public Deck deck;
@@ -226,9 +218,6 @@ public class Pyramid : MonoBehaviour
                     if (cd.rank == 13)
                     {
                         MoveToGoal(cd);
-                        wasteTop = waste.Pop();
-                        MoveCard(wasteTop, layout.wasteTop, pCardState.wasteTop);
-                        wasteTop.clickable = true;
                     }
                     else
                     {
@@ -237,12 +226,10 @@ public class Pyramid : MonoBehaviour
                 }
                 else if (ValidPair(cd, selected))
                 {
+                    RevealUnderlying(cd);
+                    RevealUnderlying(selected);
                     MoveToGoal(cd);
                     MoveToGoal(selected);
-                    wasteTop = waste.Pop();
-                    MoveCard(wasteTop, layout.wasteTop, pCardState.wasteTop);
-                    wasteTop.clickable = true;
-                    //allow underlying cards to be selected
                     UnselectCard();
                 }
                 else
@@ -258,6 +245,7 @@ public class Pyramid : MonoBehaviour
                     {
                         if (cd.rank == 13)
                         {
+                            RevealUnderlying(cd);
                             MoveToGoal(cd);
                         }
                         else
@@ -267,15 +255,10 @@ public class Pyramid : MonoBehaviour
                     }
                     else if (ValidPair(cd, selected))
                     {
-                        if (selected.state == pCardState.wasteTop)
-                        {
-                            wasteTop = waste.Pop();
-                            MoveCard(wasteTop, layout.wasteTop, pCardState.wasteTop);
-                            wasteTop.clickable = true;
-                        }
+                        RevealUnderlying(cd);
+                        RevealUnderlying(selected);
                         MoveToGoal(cd);
                         MoveToGoal(selected);
-                        //allow underlying cards to be selected
                         UnselectCard();
                     }
                     else
@@ -286,7 +269,7 @@ public class Pyramid : MonoBehaviour
                 break;
         }
 
-        //CheckForGameOver();
+        CheckForGameOver();
     }
 
 
@@ -315,6 +298,16 @@ public class Pyramid : MonoBehaviour
         cd.selected = false;
         cd.clickable = false;
         goal.Add(cd);
+        if (cd.state == pCardState.wasteTop)
+        {
+            wasteTop = null;
+            if (waste.Count != 0)
+            {
+                wasteTop = waste.Pop();
+                MoveCard(wasteTop, layout.wasteTop, pCardState.wasteTop);
+                wasteTop.clickable = true;
+            }
+        }
         MoveCard(cd, layout.goal, pCardState.goal);
         if (tableau.Contains(cd))
         {
@@ -323,8 +316,129 @@ public class Pyramid : MonoBehaviour
         cd.SetSortOrder(-152 + 3*goal.Count);
     }
 
+    public void RevealUnderlying(CardPyramid cd)
+    {
+        foreach (CardPyramid tcd in tableau)
+        {
+            if (tcd.hiddenBy.Contains(cd))
+            {
+                tcd.hiddenBy.Remove(cd);
+            }
+            if (tcd.hiddenBy.Count == 0)
+            {
+                tcd.clickable = true;
+            }
+        }
+    }
+
     public void CheckForGameOver()
     {
+        if (tableau.Count == 0)
+        {
+            winText.SetActive(true);
+            Invoke("FlipWin", 0.5f);
+            Invoke("FlipWin", 1f);
+            Invoke("FlipWin", 1.5f);
+            Invoke("FlipWin", 2f);
+            Invoke("FlipWin", 2.5f);
+            Invoke("ResetScene", 3f);
+            return;
+        }
 
+        List<CardPyramid> validCards = new List<CardPyramid>();
+        Stack<CardPyramid> tempStack = new Stack<CardPyramid>();
+        CardPyramid tempCard;
+        bool pairFound = false;
+
+        foreach (CardPyramid tcd in tableau)
+        {
+            if (tcd.hiddenBy.Count == 0)
+            {
+                validCards.Add(tcd);
+            }
+        }
+
+        while (waste.Count > 0 && !pairFound)
+        {
+            tempCard = waste.Pop();
+            foreach (CardPyramid tcd in validCards)
+            {
+                if (ValidPair(tcd, tempCard))
+                {
+                    pairFound = true;
+                }
+            }
+            tempStack.Push(tempCard);
+        }
+        while (tempStack.Count > 0)
+        {
+            waste.Push(tempStack.Pop());
+        }
+
+        while (stock.Count > 0 && !pairFound)
+        {
+            tempCard = stock.Pop();
+            foreach (CardPyramid tcd in validCards)
+            {
+                if (ValidPair(tcd, tempCard))
+                {
+                    pairFound = true;
+                }
+            }
+            tempStack.Push(tempCard);
+        }
+        while (tempStack.Count > 0)
+        {
+            stock.Push(tempStack.Pop());
+        }
+
+        if (wasteTop != null && !pairFound)
+        {
+            foreach (CardPyramid tcd in validCards)
+            {
+                if (ValidPair(tcd, wasteTop))
+                {
+                    return;
+                }
+            }
+        }
+
+        for (int i = 0; i < validCards.Count && !pairFound; i++)
+        {
+            tempCard = validCards[i];
+            for (int j = i + 1; j < validCards.Count && !pairFound; j++)
+            {
+                if (ValidPair(tempCard, validCards[j]))
+                {
+                    return;
+                }
+            }
+        }
+
+        if (!pairFound)
+        {
+            loseText.SetActive(true);
+            Invoke("FlipLose", 0.5f);
+            Invoke("FlipLose", 1f);
+            Invoke("FlipLose", 1.5f);
+            Invoke("FlipLose", 2f);
+            Invoke("FlipLose", 2.5f);
+            Invoke("ResetScene", 3f);
+        }
+    }
+
+    public void FlipWin()
+    {
+        winText.SetActive(!winText.activeSelf);
+    }
+
+    public void FlipLose()
+    {
+        loseText.SetActive(!loseText.activeSelf);
+    }
+
+    public void ResetScene()
+    {
+        SceneManager.LoadScene("Pyramid");
     }
 }

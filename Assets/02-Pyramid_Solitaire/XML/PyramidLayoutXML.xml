@@ -21,7 +21,7 @@
 	<!-- Layer2, the next level. -->
 	<slot id="3" x="-2" y="3" layer="2" hiddenby="6,7" />
 	<slot id="4" x="0" y="3" layer="2" hiddenby="7,8" />
-	<slot id="5" x="2" y="3" layer="2" hiddenby="6,9" />
+	<slot id="5" x="2" y="3" layer="2" hiddenby="8,9" />
 
 	<!-- Layer3, the next level. -->
 	<slot id="6" x="-3"  y="2" layer="3" hiddenby="10,11" />
